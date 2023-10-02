@@ -3,6 +3,8 @@ package uz.xbakhromjon.notificationservice.notification;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class NotificationService {
     private final NotificationRepository repository;
@@ -25,16 +27,18 @@ public class NotificationService {
 
     public void sent(NotificationJpaEntity notification) {
         notification = repository.save(notification);
-        if (notification.getEvent().getTypes().contains(NotificationType.FIREBASE)) {
+        List<NotificationSendingType> sendingTypes = notification.getEvent().getSendingViews().stream().map(NotificationSendingView::getSendingType).toList();
+
+        if (sendingTypes.contains(NotificationSendingType.FIREBASE)) {
             firebaseNotificationSender.send(notification);
         }
-        if (notification.getEvent().getTypes().contains(NotificationType.SMS)) {
+        if (sendingTypes.contains(NotificationSendingType.SMS)) {
             smsNotificationSender.send(notification);
         }
-        if (notification.getEvent().getTypes().contains(NotificationType.SOCKET)) {
+        if (sendingTypes.contains(NotificationSendingType.SOCKET)) {
             socketNotificationSender.send(notification);
         }
-        if (notification.getEvent().getTypes().contains(NotificationType.UNKNOWN)) {
+        if (sendingTypes.contains(NotificationSendingType.UNKNOWN)) {
             unknownNotificationSender.send(notification);
         }
 

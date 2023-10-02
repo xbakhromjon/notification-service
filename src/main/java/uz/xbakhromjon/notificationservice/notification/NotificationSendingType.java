@@ -1,6 +1,6 @@
 package uz.xbakhromjon.notificationservice.notification;
 
-public enum NotificationType {
+public enum NotificationSendingType {
     SMS,
     FIREBASE,
     SOCKET,
